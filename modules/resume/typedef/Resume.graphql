@@ -1,0 +1,91 @@
+enum SkillCategory {
+  LANGUAGE
+  FRAMEWORK_LIBRARY_SERVICES
+  OPERATING_SYSTEM_TOOLS
+  TOP_10
+}
+
+type Success {
+  success: Boolean
+}
+
+type Introduction {
+  id: String!
+  name: String!
+  designation: String!
+  email: String!
+  mobile: String!
+  aboutMe: String!
+  selected: Boolean!
+}
+
+input IntroductionInput {
+  id: String
+  name: String!
+  designation: String!
+  email: String!
+  mobile: String!
+  aboutMe: String!
+  selected: Boolean!
+}
+
+type Skill {
+  uniqueId: String!
+  displayName: String!
+  category: [SkillCategory!]!
+  logo: String
+}
+
+input SkillInput {
+  uniqueId: String
+  displayName: String!
+  category: [SkillCategory!]!
+  logo: String
+}
+
+type Company {
+  uniqueId: String!
+  name: String!
+  startDate: String!
+  endDate: String!
+  userDesignation: String!
+  projects: [Project]!
+}
+
+input CompanyInput {
+  uniqueId: String
+  name: String!
+  startDate: String!
+  endDate: String!
+  userDesignation: String!
+}
+
+type Project {
+  companyId: String!
+  uniqueId: String!
+  name: String!
+  userRole: String!
+  roleDescription: String!
+}
+
+input ProjectInput {
+  companyId: String!
+  uniqueId: String!
+  name: String!
+  userRole: String!
+  roleDescription: String!
+}
+
+type Query {
+  userIntroduction: Introduction!
+  top10: [Skill!]!
+  allSkills: [Skill!]!
+  allCompanies: [Company!]!
+}
+
+type Mutation {
+  saveUserIntroduction (data: IntroductionInput!): Introduction!
+  saveSkill (skills: SkillInput!): Skill!
+  saveCompany (company: CompanyInput!): Company
+  saveCompanyProject (projectInput: ProjectInput!): [Project!]!
+}
