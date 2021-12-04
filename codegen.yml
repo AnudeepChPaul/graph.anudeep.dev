@@ -1,0 +1,12 @@
+overwrite: true
+schema: "./modules/**/typedef/*graphql"
+documents: null
+generates:
+  generated/masterTypes.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+      # - "typescript-mongodb"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"
