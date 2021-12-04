@@ -1,4 +1,4 @@
-import { User, Address } from "../../generated/masterTypes"
+import { Address, User } from "@gen/masterTypes"
 
 const address: Address[] = [{
   uniqueId: "sd824jsdaXuu8q",
@@ -22,7 +22,7 @@ const address: Address[] = [{
   state: "OD"
 }]
 
-const data = [{
+const data: User[] = [{
   name: "Anudeep",
   email: "anudeepch.paul@gmail.com",
   uniqueId: "sd824jsdaXuu8q"
@@ -35,8 +35,8 @@ const data = [{
   email: "anushreya@gmail.com",
   uniqueId: "y37201nssak1e"
 }, {
-  name: null,
-  email: null,
+  name: '',
+  email: '',
   uniqueId: "lauq934j"
 }]
 

@@ -1,4 +1,4 @@
-import { QueryUserDetailsArgs, User } from "../../generated/masterTypes";
+import { QueryUserDetailsArgs, User } from "@gen/masterTypes";
 import { getUserAddress, getUserDetailsByAll } from "./userDal";
 
 export const userResolvers = {

@@ -1,4 +1,4 @@
-import { Company, Introduction, Project, Skill, SkillCategory } from '../../generated/masterTypes'
+import { Company, Introduction, Project, Skill, SkillCategory } from '@gen/masterTypes'
 import faker, { company } from 'faker';
 
 const data: Introduction[] = new Array(2).fill(0).map(el => ({

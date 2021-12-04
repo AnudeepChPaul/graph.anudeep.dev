@@ -1,4 +1,4 @@
-import { Company, IntroductionInput } from "../../generated/masterTypes"
+import { Company, IntroductionInput } from "@gen/masterTypes"
 import { getAllCompanies, getAllSkills, getIntro, getProjectsByCompany, getTop10Skills } from "./resumeDal"
 
 export const resumeResolver = {
