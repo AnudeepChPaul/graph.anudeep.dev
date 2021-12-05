@@ -2,14 +2,14 @@ import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import https, { ServerOptions } from 'https'
 import fs from 'fs'
-import { DocumentNode } from "graphql";
-import { resolvers, typeDefs } from "./schema";
-import { loadEnvVariables } from "./utils/util";
+import { GraphQLSchema } from "graphql";
+import { schema } from "./schema";
+import { loadEnvVariables, log } from "./utils/util";
 
 loadEnvVariables();
 
-async function startApolloServer(typeDefs: DocumentNode, resolvers: any) {
-  const server = new ApolloServer({ typeDefs, resolvers })
+async function startApolloServer(schema: GraphQLSchema) {
+  const server = new ApolloServer({ schema })
   await server.start();
 
   const app = express()
@@ -26,8 +26,8 @@ async function startApolloServer(typeDefs: DocumentNode, resolvers: any) {
   const httpServer = https.createServer(serverOptions as ServerOptions, app)
 
   httpServer.listen({ port: process.env.PORT }, () => {
-    console.log(`🚀 Server ready at https://localhost:${process.env.PORT}${server.graphqlPath}`)
+    log(`🚀 Server ready at https://localhost:${process.env.PORT}${server.graphqlPath}`)
   });
 }
 
-startApolloServer(typeDefs, resolvers)
+startApolloServer(schema)

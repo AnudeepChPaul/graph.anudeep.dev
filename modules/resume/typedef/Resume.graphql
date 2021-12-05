@@ -9,18 +9,18 @@ type Success {
   success: Boolean
 }
 
-type Introduction {
-  id: String!
-  name: String!
-  designation: String!
-  email: String!
-  mobile: String!
-  aboutMe: String!
-  selected: Boolean!
+type Introduction @entity{
+  uniqueId: String! @id
+  name: String! @column
+  designation: String! @column
+  email: String! @column
+  mobile: String! @column
+  aboutMe: String! @column
+  selected: Boolean! @column
 }
 
 input IntroductionInput {
-  id: String
+  uniqueId: String
   name: String!
   designation: String!
   email: String!
@@ -29,11 +29,11 @@ input IntroductionInput {
   selected: Boolean!
 }
 
-type Skill {
-  uniqueId: String!
-  displayName: String!
-  category: [SkillCategory!]!
-  logo: String
+type Skill @entity{
+  uniqueId: String! @id
+  displayName: String! @column
+  category: [SkillCategory!]! @column
+  logo: String @column
 }
 
 input SkillInput {
@@ -43,13 +43,13 @@ input SkillInput {
   logo: String
 }
 
-type Company {
-  uniqueId: String!
-  name: String!
-  startDate: String!
-  endDate: String!
-  userDesignation: String!
-  projects: [Project]!
+type Company @entity{
+  uniqueId: String! @id @map(path: "_id")
+  name: String! @column
+  startDate: String! @column
+  endDate: String! @column
+  userDesignation: String! @column
+  projects: [Project]! @embedded
 }
 
 input CompanyInput {
@@ -60,12 +60,12 @@ input CompanyInput {
   userDesignation: String!
 }
 
-type Project {
-  companyId: String!
-  uniqueId: String!
-  name: String!
-  userRole: String!
-  roleDescription: String!
+type Project @entity(embedded: true) {
+  companyId: String! @id
+  uniqueId: String! @column
+  name: String! @column
+  userRole: String! @column
+  roleDescription: String! @column
 }
 
 input ProjectInput {

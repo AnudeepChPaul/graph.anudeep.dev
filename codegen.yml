@@ -3,10 +3,13 @@ schema: "./modules/**/typedef/*graphql"
 documents: null
 generates:
   generated/masterTypes.ts:
+    config:
+      idFieldName: _id
+      objectIdType: string
     plugins:
       - "typescript"
       - "typescript-resolvers"
-      # - "typescript-mongodb"
+      - "typescript-mongodb"
   ./graphql.schema.json:
     plugins:
       - "introspection"

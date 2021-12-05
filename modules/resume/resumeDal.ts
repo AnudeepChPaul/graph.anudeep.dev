@@ -9,7 +9,7 @@ const data: Introduction[] = new Array(2).fill(0).map(el => ({
   aboutMe: "Full Stack Developer with 5 years 8 months of experience in Hybrid App Development." +
     "Seeking a Fullstack role that enriches my skills, architectural knowledge and talent to the best.",
   selected: true,
-  id: faker.datatype.uuid()
+  uniqueId: faker.datatype.uuid()
 } as Introduction))
 
 const companies: Company[] = new Array(3).fill(0).map(el => ({
