@@ -38,6 +38,7 @@
       "@gen/*": ["generated/*"],
       "@mods/*": ["modules/*"],
       "@utils/*": ["utils/*"],
+      "@/*": ["*"],
     },
     /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
@@ -53,7 +54,7 @@
     /* JavaScript Support */
     "allowJs": true,
     /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */
-    "checkJs": true,
+    "checkJs": false,
     /* Enable error reporting in type-checked JavaScript files. */
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from `node_modules`. Only applicable with `allowJs`. */
 

@@ -1,11 +1,12 @@
 overwrite: true
-schema: "./modules/**/typedef/*graphql"
+schema: "./modules/**/*.graphql"
 documents: null
 generates:
   generated/masterTypes.ts:
     config:
       idFieldName: _id
-      objectIdType: string
+      useIndexSignature: true
+      makeResolverTypeCallable: true
     plugins:
       - "typescript"
       - "typescript-resolvers"

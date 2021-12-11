@@ -1,4 +1,4 @@
-import { QueryUserDetailsArgs, User } from "@gen/masterTypes";
+import { QueryResolvers, QueryUserDetailsArgs, Resolvers, User, UserResolvers } from "@gen/masterTypes";
 import { getUserAddress, getUserDetailsByAll } from "./userDal";
 
 export const userResolvers = {
@@ -6,11 +6,11 @@ export const userResolvers = {
     userDetails: (obj: any, args: QueryUserDetailsArgs, ctx: any) => {
       return getUserDetailsByAll(args.id)
     }
-  },
+  } as QueryResolvers,
 
   User: {
     address: (user: User) => {
       return getUserAddress(user.uniqueId)
     }
-  }
+  } as UserResolvers
 }

@@ -6,13 +6,14 @@ import { resumeResolver } from "@mods/resume/resumeResolver";
 import { DIRECTIVES } from '@graphql-codegen/typescript-mongodb'
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLSchema } from "graphql";
+import { authResolver } from '@mods/authentication/authResolver'
 
 export const typeDefs = mergeTypeDefs(
-  loadFilesSync(path.join(__dirname, "modules/**/typedef/*.graphql"))
+  loadFilesSync(path.join(__dirname, "modules/**/*.graphql"))
 )
 
 export const resolvers = mergeResolvers([
-  userResolvers, resumeResolver
+  userResolvers, resumeResolver, authResolver
 ])
 
 export const schema: GraphQLSchema = makeExecutableSchema({

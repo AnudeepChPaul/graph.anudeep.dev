@@ -1,7 +1,27 @@
-import { Company, Introduction, Project, Skill, SkillCategory } from '@gen/masterTypes'
-import faker, { company } from 'faker';
+import {
+  Company,
+  CompanyDbObject,
+  CompanyInput,
+  Introduction,
+  IntroductionDbObject,
+  IntroductionInput,
+  Project,
+  ProjectDbObject,
+  ProjectInput,
+  Skill,
+  SkillCategory,
+  SkillDbObject,
+  SkillInput
+} from '@gen/masterTypes'
+import faker from 'faker';
+import { MongoDataSource } from 'apollo-datasource-mongodb'
+import { DataSourceConfig } from 'apollo-datasource';
+import { Context } from '@/dataSources';
+import { log } from '@utils/util';
+import { ObjectId } from 'mongodb'
+import { CustomErrors } from '@/errors/CustomErrors'
 
-const data: Introduction[] = new Array(2).fill(0).map(el => ({
+const data: Introduction[] = new Array( 2 ).fill( 0 ).map( el => ({
   name: faker.name.findName(),
   designation: faker.name.jobTitle(),
   email: faker.internet.email(),
@@ -9,62 +29,153 @@ const data: Introduction[] = new Array(2).fill(0).map(el => ({
   aboutMe: "Full Stack Developer with 5 years 8 months of experience in Hybrid App Development." +
     "Seeking a Fullstack role that enriches my skills, architectural knowledge and talent to the best.",
   selected: true,
-  uniqueId: faker.datatype.uuid()
-} as Introduction))
+  _id: faker.datatype.uuid()
+} as Introduction) )
 
-const companies: Company[] = new Array(3).fill(0).map(el => ({
-  uniqueId: faker.datatype.uuid(),
-  name: faker.company.companyName(),
-  userDesignation: faker.name.jobTitle(),
-  startDate: faker.date.past().toDateString(),
-  endDate: faker.date.past().toDateString(),
-  projects: []
-} as Company))
+export class UserIntroductionDataSource extends MongoDataSource<IntroductionDbObject, Context> {
+  initialize(config: DataSourceConfig<Context>) {
+    if ( super.initialize ) {
+      super.initialize( config )
+    }
+  }
 
-const skillCategories = [
-  'LANGUAGE',
-  'FRAMEWORK_LIBRARY_SERVICES',
-  'OPERATING_SYSTEM_TOOLS',
-  'TOP_10'
-]
+  async getIntro(): Promise<IntroductionDbObject[]> {
+    return this.collection.find( {} ).toArray()
+  }
 
-const skills = new Array(40).fill(0).map((el, index) => ({
-  uniqueId: faker.datatype.uuid(),
-  displayName: faker.name.jobTitle(),
-  logo: faker.image.sports(),
-  category: [skillCategories[index % 4]]
-} as Skill))
+  async createUserIntro(userIntro: IntroductionInput): Promise<IntroductionDbObject[]> {
+    const inserted = await this.collection.insertOne( { ...userIntro, _id: new ObjectId() } as IntroductionDbObject )
+    log( 'Inserted doc: ', JSON.stringify( inserted ) )
+    return this.collection.find( { "_id": inserted.insertedId } )
+      // .map( (doc: any) => ({ ...doc, uniqueId: doc._id.toString() }) )
+      .toArray()
+  }
 
-const allSkills = new Array(10).fill(0).map(el => ({
-  uniqueId: faker.datatype.uuid(),
-  displayName: faker.name.jobTitle(),
-  logo: faker.image.sports()
-} as Skill))
+  async updateUserIntro(userIntro: IntroductionInput): Promise<Array<IntroductionDbObject>> {
+    const id = new ObjectId( userIntro._id as string )
+    const inserted = await this.collection.updateOne( { "_id": id }, { "$set": { ...userIntro, _id: id } } )
 
-const projects = new Array(7).fill(0).map((el, index) => ({
-  uniqueId: faker.datatype.uuid(),
-  userRole: faker.name.jobTitle(),
-  name: faker.company.companyName(),
-  roleDescription: faker.name.jobDescriptor(),
-  companyId: companies[index % 3].uniqueId
-} as Project))
+    if ( !inserted.modifiedCount && !inserted.matchedCount ) {
+      throw new CustomErrors();
+    }
 
-export function getIntro() {
-  return data.filter(data => !!data.selected)[0]
+    const newIntro = await this.collection.find( { "_id": id } ).toArray()
+    return newIntro
+  }
 }
 
-export function getAllSkills() {
-  return skills
+export class UserSkillsDataSource extends MongoDataSource<SkillDbObject, Context> {
+  initialize(config: DataSourceConfig<Context>) {
+    if ( super.initialize ) {
+      super.initialize( config )
+    }
+  }
+
+  async getAllSkills(): Promise<Array<SkillDbObject>> {
+    const allSkills = await this.collection.find().toArray()
+    return allSkills
+  }
+
+  async getTop10Skills(): Promise<Array<SkillDbObject>> {
+    const top10Skills = await this.collection.find( { "category": SkillCategory.Top_10 } ).toArray()
+    return top10Skills
+  }
+
+  async createSkill(skill: SkillInput): Promise<Array<SkillDbObject>> {
+    const inserted = await this.collection.insertOne( { ...skill, _id: new ObjectId() } as SkillDbObject )
+    log( 'Inserted doc: ', JSON.stringify( inserted ) )
+
+    const skillArr = await this.collection.find( { "_id": inserted.insertedId } ).toArray()
+    return skillArr
+  }
+
+  async updateSkill(skill: SkillInput): Promise<Array<SkillDbObject>> {
+    const _id = new ObjectId( skill._id as string )
+    const inserted = await this.collection.updateOne(
+      { "_id": _id },
+      { $set: { ...skill, _id: _id } as SkillDbObject }
+    )
+
+    if ( !inserted.modifiedCount && !inserted.matchedCount ) {
+      throw new CustomErrors();
+    }
+
+    const skills = await this.collection.find( { "_id": _id } ).toArray()
+    return skills
+  }
 }
 
-export function getTop10Skills() {
-  return skills.filter(skill => skill.category.includes(skillCategories[3] as SkillCategory))
+export class UserCompanyDataSource extends MongoDataSource<CompanyDbObject, Context> {
+  initialize(config: DataSourceConfig<Context>) {
+    if ( super.initialize ) {
+      super.initialize( config )
+    }
+  }
+
+  async getAllCompanies(): Promise<Array<CompanyDbObject>> {
+    return await this.collection.find( {} ).toArray()
+  }
+
+  async createCompany(company: CompanyInput): Promise<Array<CompanyDbObject>> {
+    const inserted = await this.collection.insertOne( { ...company, _id: new ObjectId() } )
+    const companies = await this.collection.find( { "_id": inserted.insertedId } )
+      .toArray()
+
+    return companies
+  }
+
+  async updateCompany(company: CompanyInput): Promise<Array<CompanyDbObject>> {
+    const _id = new ObjectId( company._id as string )
+
+    const inserted = await this.collection.updateOne(
+      { "_id": _id },
+      { $set: { ...company, _id: _id } as CompanyDbObject }
+    )
+
+    if ( !inserted.modifiedCount && !inserted.matchedCount ) {
+      throw new CustomErrors();
+    }
+
+    const companies = await this.collection.find( { "_id": _id } )
+      // .map( (doc: CompanyDbObject) => ({ ...doc, uniqueId: doc._id.toString() }) )
+      .toArray()
+
+    return companies
+  }
 }
 
-export function getAllCompanies() {
-  return companies
-}
+export class UserProjectsDataSource extends MongoDataSource<ProjectDbObject, Context> {
+  initialize(config: DataSourceConfig<Context>) {
+    if ( super.initialize ) {
+      super.initialize( config )
+    }
+  }
 
-export function getProjectsByCompany(companyId: string) {
-  return projects.filter(project => project.companyId === companyId)
+  async getProjectsByCompany(companyId: string): Promise<Array<ProjectDbObject>> {
+    const projects = await this.collection.aggregate( [
+      {
+        '$match': {
+          "projects.companyId": new ObjectId( companyId )
+        }
+      }, {
+        '$unwind': '$projects'
+      }, {
+        '$addFields': {
+          'name': '$projects.name',
+          'userRole': '$projects.userRole',
+          'roleDescription': '$projects.roleDescription'
+        }
+      }
+    ] ).toArray();
+
+    return projects
+  }
+
+  async createProject(companyId: string, project: ProjectInput): Promise<Array<ProjectDbObject>> {
+    const _id = new ObjectId( companyId )
+    const company = await this.collection.updateOne( { _id: _id },
+      { $push: { projects: { ...project, companyId: _id } } } )
+    return (await this.getProjectsByCompany( companyId )
+    )
+  }
 }
