@@ -88,4 +88,7 @@ type Mutation {
   saveSkill (skill: SkillInput!): [Skill!]!
   saveCompany (company: CompanyInput!): [Company!]!
   saveCompanyProject (projectInput: ProjectInput!): [Project!]!
+  removeSkill(skillId: String!): Success!
+  removeCompany(companyId: String!): Success!
+  removeProject(companyId: String!, nameOfProject: String!): Success!
 }

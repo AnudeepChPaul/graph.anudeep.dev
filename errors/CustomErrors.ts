@@ -1,8 +1,8 @@
 import { BaseGraphError } from '@/errors/index'
 
-export class CustomErrors extends BaseGraphError {
+export class UnknownQueryError extends BaseGraphError {
   constructor(message?: string) {
-    super( 'CustomErrors', message || "No document found!", 'QUERY_RETURNED_NO_RESULT' );
+    super( 'UnknownQueryError', message || "No document found!", 'QUERY_RETURNED_NO_RESULT' );
   }
 }
 
