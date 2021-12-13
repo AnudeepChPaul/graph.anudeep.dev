@@ -1,8 +1,8 @@
 overwrite: true
-schema: "./modules/**/*.graphql"
+schema: "./src/modules/**/*.graphql.*"
 documents: null
 generates:
-  generated/masterTypes.ts:
+  ./generated/masterTypes.ts:
     config:
       idFieldName: _id
       useIndexSignature: true

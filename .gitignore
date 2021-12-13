@@ -72,6 +72,9 @@ typings/
 dev.env
 .env.test
 
+.env.dev
+.env.prod
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
@@ -112,3 +115,5 @@ generated/
 graphql.schema.json
 
 .idea/
+
+prod/

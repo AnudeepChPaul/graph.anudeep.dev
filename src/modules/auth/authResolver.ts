@@ -8,20 +8,15 @@ import {
   UserAuthStatus
 } from '@gen/masterTypes'
 import { TwilioAPIFailure } from '@/errors/CustomErrors'
-import { getRedisClient } from '@/redisConnect'
-
-const getClient = () => {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  return new (require( 'twilio' ))( accountSid, authToken );
-}
+import { connectRedis } from '@/redisClient'
+import { getTwilioClient } from '@/twilioClient'
 
 export const authResolver: Resolvers = {
   Mutation: {
-    initVerification: async function (parent: any, { input }: MutationInitVerificationArgs): Promise<AuthSuccessResponse> {
+    initVerification: async function (_parent: any, { input }: MutationInitVerificationArgs): Promise<AuthSuccessResponse> {
       let response: AuthSuccessResponse;
       try {
-        response = await getClient().verify.services( process.env.SID )
+        response = await getTwilioClient().verify.services( process.env.SID )
           .verifications
           .create( { to: input.phone, channel: input.channel } )
 
@@ -39,15 +34,15 @@ export const authResolver: Resolvers = {
       }
     },
 
-    verify: async (parent: any, { input: { code, phone } }: MutationVerifyArgs): Promise<AuthSuccessResponse> => {
+    verify: async (_parent: any, { input: { code, phone } }: MutationVerifyArgs): Promise<AuthSuccessResponse> => {
       let resp: AuthSuccessResponse;
 
       try {
-        resp = await getClient().verify.services( process.env.SID )
+        resp = await getTwilioClient().verify.services( process.env.SID )
           .verificationChecks
           .create( { to: phone, code } )
 
-        const redisClient = getRedisClient()
+        const redisClient = await connectRedis()
         if ( resp.status === UserAuthStatus.Approved.toLowerCase() ) {
           await redisClient.set( phone, 'true', {
             EX: 30 * 2
@@ -68,7 +63,7 @@ export const authResolver: Resolvers = {
       }
     },
 
-    logout: async (parent: any, args: MutationLogoutArgs): Promise<LoggedOut> => {
+    logout: async (_parent: any, _args: MutationLogoutArgs): Promise<LoggedOut> => {
       return {
         status: UserAuthStatus.LoggedOut
       }

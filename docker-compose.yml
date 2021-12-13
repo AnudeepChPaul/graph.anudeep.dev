@@ -12,3 +12,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
+
+  graphql:
+    build: .
+    environment:
+      PORT: 4000
+      GRAPHQL_PATH: /graphQL
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGO_URL: mongodb://root:example@mongo:27017/
+
+    ports:
+      - "4000:4000"

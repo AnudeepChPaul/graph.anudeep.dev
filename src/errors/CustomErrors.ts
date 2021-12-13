@@ -1,4 +1,4 @@
-import { BaseGraphError } from '@/errors/index'
+  import { BaseGraphError } from './index'
 
 export class UnknownQueryError extends BaseGraphError {
   constructor(message?: string) {

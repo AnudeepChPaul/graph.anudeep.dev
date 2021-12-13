@@ -1,10 +1,9 @@
-"use strict"
-
 import gulp from 'gulp'
-import { rmdirSync } from 'fs'
-import path from 'path'
-import { Chalk } from 'chalk'
+import webpackConfig from './webpack.common.js'
+import webpack from 'webpack-stream'
 import { spawn } from 'child_process'
+import { Chalk } from 'chalk'
+import { rmdirSync, mkdirSync } from 'fs'
 import nodemon from 'gulp-nodemon'
 
 const ch = new Chalk({ level: 3 })
@@ -27,10 +26,29 @@ function onFileUpdate(changedFiles) {
   return returnTasks;
 }
 
+gulp.task('docker', done => {
+  let params = [ "up", "-d" ]
+  if ( process.argv.includes('--down') ) {
+    log(ch.green("================= Removing docker components"))
+    params = [ 'down' ]
+  }
+
+  const cli = spawn("docker-compose", params, { stdio: 'inherit' })
+    .on('close', () => {
+      log(ch.green("================= Docker compose finished"))
+      cli.kill()
+      done()
+    })
+})
+
 gulp.task('cleanup', function cleanup(done) {
-  log(ch.blue('removing node modules'))
-  rmdirSync('node_modules', { recursive: true, force: true })
-  log(ch.green('Removed node modules'))
+  // log(ch.blue('removing node modules'))
+  // rmdirSync('node_modules', { recursive: true, force: true })
+  // log(ch.green('Removed node modules'))
+  log(ch.blue('Removing production folder'))
+  rmdirSync('./prod', { recursive: true, force: true })
+  mkdirSync('./prod', { recursive: true, force: true })
+  log(ch.green('Removed production folder'))
   done()
 })
 
@@ -60,13 +78,13 @@ gulp.task('generateGraphQl', async function (done) {
     })
 })
 
-gulp.task('setup', gulp.series('install', 'generateCerts', 'generateGraphQl'))
+gulp.task('setup', gulp.series('generateCerts', 'generateGraphQl'))
 
 gulp.task('docker', done => {
   let params = [ "up", "-d" ]
-  if (process.argv.includes('--down')) {
+  if ( process.argv.includes('--down') ) {
     log(ch.green("================= Removing docker components"))
-    params = ['down']
+    params = [ 'down' ]
   }
 
   const cli = spawn("docker-compose", params, { stdio: 'inherit' })
@@ -79,7 +97,7 @@ gulp.task('docker', done => {
 
 gulp.task('watch:develop', done => {
   const nodemonIgnoringFiles = [ 'node_modules', 'generated' ]
-  const nodemonExecCommand = "ts-node -r tsconfig-paths/register -r ./server.ts"
+  const nodemonExecCommand = "ts-node -r tsconfig-paths/register -r ./src/server.ts"
   const extensionNodemonWillLookFor = 'ts, graphql, env'
 
   const stream = nodemon({
@@ -105,3 +123,5 @@ gulp.task('watch:develop', done => {
     log(ch.green('================= Restart signal received ================='))
   })
 })
+
+// gulp.task('build', gulp.series([ 'cleanup', 'minify' ]), done)
