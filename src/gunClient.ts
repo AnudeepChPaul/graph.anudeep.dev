@@ -5,7 +5,7 @@ import { IGunChainReference } from 'gun/types/chain'
 
 let gunClient: IGunChainReference<any, any, 'pre_root'>
 
-export const conenctGunClient = (): IGunChainReference => {
+export const connectGunClient = (): IGunChainReference => {
   if ( gunClient ) {
     return gunClient
   }
@@ -20,3 +20,6 @@ export const conenctGunClient = (): IGunChainReference => {
 export const getClient = (): IGunChainReference => {
   return gunClient
 }
+
+export const abc = connectGunClient()
+

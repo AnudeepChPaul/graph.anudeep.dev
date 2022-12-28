@@ -6,7 +6,7 @@ import { formatError } from '@/errors'
 import { schema } from '@/schema'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
-import { conenctGunClient } from '@/gunClient'
+import { connectGunClient } from '@/gunClient'
 import { createHttpsSever } from '@/httpsServer'
 import { connectMongo } from '@/mongoClient'
 
@@ -23,7 +23,7 @@ async function main() {
   const client = await connectMongo()
   log('mongo connected')
 
-  conenctGunClient()
+  connectGunClient()
   log('Gun connected')
 
   const server = new ApolloServer({
